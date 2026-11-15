@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>ぜんぶちぎる</title>
 <meta name="description" content="ミシン目を ゆびで なぞって、ぴりっと ちぎる。ちぎった券で 地球一周を めざす、むだな ゲーム。">
 <meta name="theme-color" content="#c9a57a">
@@ -29,18 +29,20 @@
   --gold:#e5b53a;
   --pop:"Mochiy Pop One","Hiragino Maru Gothic ProN",system-ui,sans-serif;
   --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",system-ui,sans-serif;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--desk);color:var(--ink);font-family:var(--body);overscroll-behavior:none;overflow:hidden}
+html,body{margin:0;height:100%;height:100dvh;background:var(--desk);color:var(--ink);font-family:var(--body);overscroll-behavior:none;overflow:hidden}
 body{display:flex;justify-content:center}
 #app{position:relative;width:100%;max-width:440px;height:100%;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 #app>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#app>#sv{height:calc(100% - 46px - var(--sb))}
 #app text{font-family:var(--pop)}
 #app text.b{font-family:var(--body);font-weight:900}
 
 /* ---- HUD ---- */
-#hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:stretch;gap:8px;pointer-events:none;z-index:2}
+#hud{position:absolute;top:calc(10px + var(--st));left:10px;right:10px;display:flex;justify-content:space-between;align-items:stretch;gap:8px;pointer-events:none;z-index:2}
 .stub{position:relative;background:var(--paper);padding:8px 16px 8px 12px;border-radius:6px;box-shadow:3px 4px 0 rgba(70,45,20,.22);display:flex;flex-direction:column;justify-content:center;min-width:118px}
 .stub::after{content:"";position:absolute;right:5px;top:6px;bottom:6px;border-right:2px dotted #cdbb9c}
 .stub::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--red);border-radius:6px 0 0 6px}
@@ -62,7 +64,7 @@ body{display:flex;justify-content:center}
 .pct{font-size:10px;font-weight:900;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
 
 /* ---- メモ紙（節目） ---- */
-#toast{position:absolute;left:50%;top:96px;transform:translate(-50%,-30px) rotate(-3deg);background:#fffbe6;color:var(--ink);font-weight:900;font-size:14px;padding:12px 18px 10px;box-shadow:3px 5px 0 rgba(70,45,20,.2);opacity:0;white-space:nowrap;z-index:3;pointer-events:none;transition:opacity .25s,transform .35s cubic-bezier(.2,1.4,.4,1)}
+#toast{position:absolute;left:50%;top:calc(140px + var(--st));transform:translate(-50%,-30px) rotate(-3deg);background:#fffbe6;color:var(--ink);font-weight:900;font-size:14px;padding:12px 18px 10px;box-shadow:3px 5px 0 rgba(70,45,20,.2);opacity:0;white-space:nowrap;z-index:3;pointer-events:none;transition:opacity .25s,transform .35s cubic-bezier(.2,1.4,.4,1)}
 #toast::before{content:"";position:absolute;top:-8px;left:50%;margin-left:-28px;width:56px;height:16px;background:rgba(159,211,199,.85);transform:rotate(4deg)}
 #toast small{display:block;font-size:10.5px;color:var(--muted)}
 #toast.on{opacity:1;transform:translate(-50%,0) rotate(-3deg)}
@@ -73,8 +75,8 @@ body{display:flex;justify-content:center}
 @keyframes vin{from{opacity:0;transform:translateY(18px)}}
 
 /* ---- インデックスタブ ---- */
-#tabs{position:absolute;left:0;right:0;bottom:0;height:74px;display:flex;align-items:flex-end;gap:6px;padding:0 10px;z-index:6;pointer-events:none}
-#tabs::before{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;background:var(--paper2);box-shadow:0 -3px 0 rgba(70,45,20,.12)}
+#tabs{position:absolute;left:0;right:0;bottom:0;height:calc(74px + var(--sb));display:flex;align-items:flex-end;gap:6px;padding:0 10px var(--sb);z-index:6;pointer-events:none}
+#tabs::before{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(16px + var(--sb));background:var(--paper2);box-shadow:0 -3px 0 rgba(70,45,20,.12)}
 #tabs button{pointer-events:auto;position:relative;flex:1;height:58px;border:none;border-radius:14px 14px 0 0;padding:6px 4px 14px;color:var(--ink);font-family:var(--pop);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transform:translateY(8px);transition:transform .2s cubic-bezier(.2,1.4,.4,1),background .2s;box-shadow:2px -2px 0 rgba(70,45,20,.12)}
 #tabs button[data-v="tear"]{background:#f6d8d4}
 #tabs button[data-v="len"]{background:#f8ecc2}
@@ -82,16 +84,16 @@ body{display:flex;justify-content:center}
 #tabs button[data-v="shop"]{background:#dfe3f0}
 #tabs button{font-size:11px;gap:1px;flex-direction:column;padding:5px 2px 12px}
 #tabs button[data-v="time"]{background:#efd9e6}
-#paperSw{position:absolute;right:10px;top:84px;z-index:2;display:none;background:var(--paper);border-radius:999px;padding:3px;box-shadow:2px 3px 0 rgba(70,45,20,.2);gap:2px}
+#paperSw{position:absolute;right:10px;top:calc(98px + var(--st));z-index:2;display:none;background:var(--paper);border-radius:999px;padding:3px;box-shadow:2px 3px 0 rgba(70,45,20,.2);gap:2px}
 #paperSw button{border:none;background:transparent;border-radius:999px;padding:5px 11px;font-family:var(--pop);font-size:11.5px;color:var(--muted);cursor:pointer}
 #paperSw button.on{background:var(--ink);color:var(--paper)}
-.coinchip{position:absolute;left:10px;top:84px;z-index:2;pointer-events:none;background:var(--paper);border-radius:999px;padding:4px 10px 4px 6px;box-shadow:2px 3px 0 rgba(70,45,20,.2);font-weight:900;font-size:12px;display:flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums}
+.coinchip{position:absolute;left:10px;top:calc(98px + var(--st));z-index:2;pointer-events:none;background:var(--paper);border-radius:999px;padding:4px 10px 4px 6px;box-shadow:2px 3px 0 rgba(70,45,20,.2);font-weight:900;font-size:12px;display:flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums}
 .coinchip i{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f8dc86,#d9a93a);box-shadow:inset 0 0 0 1.5px #a87a1e}
 .coinchip span{font-family:var(--pop);font-size:14px}
 #glow{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .3s;box-shadow:inset 0 0 0 6px var(--gc,#e5b53a),inset 0 0 40px 10px var(--gc,#e5b53a);animation:gl 1s ease-in-out infinite}
 #glow.on{opacity:.55}
 @keyframes gl{50%{filter:brightness(1.3);box-shadow:inset 0 0 0 8px var(--gc,#e5b53a),inset 0 0 60px 16px var(--gc,#e5b53a)}}
-#buffs{position:absolute;left:10px;top:114px;z-index:2;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+#buffs{position:absolute;left:10px;top:calc(134px + var(--st));z-index:2;display:flex;flex-direction:column;gap:5px;pointer-events:none}
 .bf{background:var(--paper);border-radius:8px;padding:4px 8px 5px;box-shadow:2px 3px 0 rgba(70,45,20,.2);font-weight:900;font-size:11px;min-width:168px;border-left:5px solid var(--c)}
 .bf b{font-family:var(--pop);font-weight:400;float:right;margin-left:10px;font-variant-numeric:tabular-nums}
 .bf i{display:block;height:4px;border-radius:2px;background:var(--c);margin-top:3px;transition:width .2s linear}
@@ -101,6 +103,9 @@ body{display:flex;justify-content:center}
 #tabs button:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 #tabs .dot{position:absolute;top:6px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--paper)}
 @media (prefers-reduced-motion:reduce){#toast,#tabs button,.odo .s{transition:none}#vw.in{animation:none}}
+#share{position:absolute;right:12px;top:calc(12px + var(--st));z-index:5;display:none;align-items:center;gap:6px;border:none;background:var(--ink);color:var(--paper);font-family:var(--pop);font-size:12px;padding:8px 13px 7px;border-radius:999px;box-shadow:2px 3px 0 rgba(70,45,20,.25);cursor:pointer}
+#share:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(70,45,20,.25)}
+#share:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 /* ---- タイトル ---- */
 #splash{position:absolute;inset:0;z-index:20;background:var(--desk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;cursor:pointer;touch-action:none}
 #splash::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(255,240,210,.45),transparent 60%);pointer-events:none}
@@ -116,7 +121,7 @@ body{display:flex;justify-content:center}
 </head>
 <body>
 <div id="app">
-  <svg id="sv" viewBox="0 0 360 640" preserveAspectRatio="xMidYMid meet"></svg>
+  <svg id="sv" viewBox="0 0 360 640" preserveAspectRatio="xMidYMax meet"></svg>
   <div id="hud">
     <div class="stub"><div class="lbl">ちぎった</div><div class="row"><div class="odo" id="odo"></div><span class="unit">まい</span></div><div class="sub" id="len">0.00 m</div></div>
     <div class="earth">
@@ -129,6 +134,7 @@ body{display:flex;justify-content:center}
   <div id="buffs"></div>
   <div id="glow"></div>
   <div id="toast"></div>
+  <button id="share" aria-label="きろくを シェアする"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7" fill="none" stroke="#fbf6ea" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>シェア</button>
   <div id="splash" role="button" aria-label="タップして はじめる"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 440" id="spSvg">
   <g transform="translate(6 7)" opacity=".18"><path d="M46,30 L374,30 Q390,30 390,46 L390,190 L382,190 A7,7 0 0 0 368,190 L360,190 A7,7 0 0 0 346,190 L338,190 A7,7 0 0 0 324,190 L316,190 A7,7 0 0 0 302,190 L294,190 A7,7 0 0 0 280,190 L272,190 A7,7 0 0 0 258,190 L250,190 A7,7 0 0 0 236,190 L228,190 A7,7 0 0 0 214,190 L206,190 A7,7 0 0 0 192,190 L184,190 A7,7 0 0 0 170,190 L162,190 A7,7 0 0 0 148,190 L140,190 A7,7 0 0 0 126,190 L118,190 A7,7 0 0 0 104,190 L96,190 A7,7 0 0 0 82,190 L74,190 A7,7 0 0 0 60,190 L52,190 A7,7 0 0 0 38,190 L30,190 L30,46 Q30,30 46,30 Z" fill="#3a2f25"/></g>
   <path d="M46,30 L374,30 Q390,30 390,46 L390,190 L382,190 A7,7 0 0 0 368,190 L360,190 A7,7 0 0 0 346,190 L338,190 A7,7 0 0 0 324,190 L316,190 A7,7 0 0 0 302,190 L294,190 A7,7 0 0 0 280,190 L272,190 A7,7 0 0 0 258,190 L250,190 A7,7 0 0 0 236,190 L228,190 A7,7 0 0 0 214,190 L206,190 A7,7 0 0 0 192,190 L184,190 A7,7 0 0 0 170,190 L162,190 A7,7 0 0 0 148,190 L140,190 A7,7 0 0 0 126,190 L118,190 A7,7 0 0 0 104,190 L96,190 A7,7 0 0 0 82,190 L74,190 A7,7 0 0 0 60,190 L52,190 A7,7 0 0 0 38,190 L30,190 L30,46 Q30,30 46,30 Z" fill="#fbf6ea" stroke="#3a2f25" stroke-width="5" stroke-linejoin="round"/>
@@ -218,6 +224,10 @@ S('rect',{x:X0-8,y:LINE-38,width:WD+16,height:40,rx:5,fill:'#3a2f25'},calDeco);
 T(calDeco,180,LINE-19,'ひ め く り',14,{fill:'#f2d27a'});
 [X0+16,X1-16].forEach(x=>S('circle',{cx:x,cy:LINE-19,r:4,fill:'#c9a57a'},calDeco));
 const roll=S('g',{},svg);
+function layoutTop(){try{const m=svg.getScreenCTM();if(!m||!m.d)return;const el=document.getElementById('coin'),r=el.getBoundingClientRect();if(!r.height)return;
+  const dy=clamp((r.bottom+8-m.f)/m.d-14,0,170);roll.setAttribute('transform','translate(0 '+dy.toFixed(1)+')');
+  document.querySelector('#stripclip rect').setAttribute('y',(44+dy).toFixed(1))}catch(e){}}
+addEventListener('resize',layoutTop);
 S('rect',{x:38,y:14,width:284,height:58,rx:29,fill:'#f2ead8'},roll);
 S('rect',{x:38,y:50,width:284,height:22,rx:11,fill:'rgba(80,55,25,.12)'},roll);
 for(let i=0;i<6;i++)S('line',{x1:60+i*44,y1:20,x2:52+i*44,y2:66,stroke:'rgba(80,55,25,.08)','stroke-width':3},roll);
@@ -423,7 +433,7 @@ function showCombo(){if(combo<2){stampG.setAttribute('opacity',0);return}const c
 const vw=document.getElementById('vw'),tabBtns={};document.querySelectorAll('#tabs button').forEach(b=>tabBtns[b.dataset.v]=b);
 const LAND=[[1.8,'たたみ','tatami'],[5,'キリン','giraffe'],[11,'バス','bus'],[25,'25mプール','pool'],[100,'100m走','run'],[333,'東京タワー','tower'],[634,'スカイツリー','sky'],[3776,'富士山','fuji'],[42195,'フルマラソン','run'],[500000,'東京〜大阪','train'],[3000000,'日本列島','japan'],[40075000,'地球一周','earth']];
 const TGT=[[1,'1円玉','coin1'],[4.5,'10円玉','coin10'],[60,'たまご','egg'],[200,'スマホ','phone'],[520,'ペットボトル','bottle'],[4000,'ねこ','cat'],[10000,'おこめ10kg','rice'],[60000,'おとな','human'],[160000,'おすもうさん','sumo'],[1000000,'くるま','car'],[5000000,'ゾウ','elephant'],[150000000,'クジラ','whale']];
-let view='tear',vLoop=null;
+let view='tear',vLoop=null,shopSeen=[];
 function fmtLen(m){return m<1?(m*100).toFixed(0)+' cm':m<1000?(m<10?m.toFixed(2):m.toFixed(1))+' m':(m/1000).toLocaleString(undefined,{maximumFractionDigits:m<1e4?2:1})+' km'}
 const fmtW=g=>g<1000?(g<10?g.toFixed(1):g.toFixed(0))+' g':g<1e6?(g/1000).toFixed(g<1e4?2:1)+' kg':(g/1e6).toFixed(2)+' t';
 const UPS=[
@@ -532,8 +542,8 @@ function renderTime(dyn,L,next){dyn.innerHTML='';const y0=186,y1=574,AX=58,ppd=(
     T(g,-w/2+10,-5,(passed?'✓ ':'')+name,10.5,{fill:isNext?'#fbf6ea':passed?'#4a8f6a':'#3a2f25','text-anchor':'start'});
     T(g,-w/2+10,8,(sub?sub+'　':'')+fmtDays(d)+' まえ',8,{fill:isNext?'#d8c9b0':'#7d6b57','text-anchor':'start',class:'b'})})}
 function setView(v){view=v;Object.keys(tabBtns).forEach(k=>tabBtns[k].classList.toggle('on',k===v));sfx.page();
-  document.getElementById('hud').style.display=v==='tear'?'flex':'none';setTimeout(paperUI,0);document.getElementById('coin').style.display=v==='tear'?'flex':'none';toastEl.classList.remove('on');
-  if(v==='tear'){vw.style.display='none';vLoop=null;badges();return}
+  document.getElementById('hud').style.display=v==='tear'?'flex':'none';setTimeout(paperUI,0);document.getElementById('coin').style.display=v==='tear'?'flex':'none';toastEl.classList.remove('on');document.getElementById('share').style.display=(v==='len'||v==='wt'||v==='time')?'inline-flex':'none';
+  if(v==='tear'){vw.style.display='none';vLoop=null;badges();layoutTop();return}
   vw.style.display='block';vw.classList.remove('in');void vw.getBoundingClientRect();vw.classList.add('in');vw.innerHTML='';({len:buildLen,wt:buildWt,shop:buildShop,time:buildTime})[v]();badges()}
 Object.keys(tabBtns).forEach(k=>tabBtns[k].addEventListener('click',()=>{ac();if(view!==k)setView(k)}));
 function header(label,big,col){
@@ -694,10 +704,11 @@ function badges(){const grams=count*GRAM,ci=(c=>c<0?TGT.length:c)(TGT.findIndex(
   const set=(b,on)=>{let d=b.querySelector('.dot');if(on&&!d){d=document.createElement('span');d.className='dot';b.appendChild(d)}else if(!on&&d)d.remove()};
   set(tabBtns.wt,ci>seenWt&&view!=='wt');set(tabBtns.len,li>seenLen&&view!=='len');
   if(tabBtns.time)set(tabBtns.time,calOwned&&view!=='time'&&TMARK.filter(m=>m[0]<=calDays).length>seenTime);
-  if(tabBtns.shop)set(tabBtns.shop,view!=='shop'&&UPS.some(u=>{const p=nextPrice(u);return p!=null&&odachin>=p}))}
+  if(tabBtns.shop){const a=affordable();if(view==='shop'){if(shopSeen.join()!==a.join()){shopSeen=a}}set(tabBtns.shop,view!=='shop'&&a.some(k=>!shopSeen.includes(k)))}}
+function affordable(){return UPS.filter(u=>{const p=nextPrice(u);return p!=null&&odachin>=p}).map(u=>u.k+up[u.k])}
 /* 保存（この端末だけ） */
-function save(){try{localStorage.setItem('mishin_v1',JSON.stringify({count,meters,mi,seenWt,seenLen,odachin,up,owned,voiceSel,buffs,paper,calOwned,calDays,calStart,seenTime}))}catch(e){}}
-(function load(){try{const d=JSON.parse(localStorage.getItem('mishin_v1')||'null');if(d){count=d.count||0;meters=d.meters||0;mi=d.mi||0;seenWt=d.seenWt||0;seenLen=d.seenLen||0;odachin=d.odachin||0;if(d.up)up=Object.assign(up,d.up);if(d.owned)owned=Object.assign(owned,d.owned);voiceSel=d.voiceSel||'default';charges=scMax();if(d.buffs)buffs=Object.assign(buffs,d.buffs);calOwned=!!d.calOwned;calDays=d.calDays||0;calStart=d.calStart||null;seenTime=d.seenTime||0;paper=calOwned&&d.paper==='cal'?'cal':'ticket';boxN=count;boxCount.textContent=boxN.toLocaleString()+' まい'}}catch(e){}})();
+function save(){try{localStorage.setItem('mishin_v1',JSON.stringify({count,meters,mi,seenWt,seenLen,odachin,up,owned,voiceSel,buffs,paper,calOwned,calDays,calStart,seenTime,shopSeen}))}catch(e){}}
+(function load(){try{const d=JSON.parse(localStorage.getItem('mishin_v1')||'null');if(d){count=d.count||0;meters=d.meters||0;mi=d.mi||0;seenWt=d.seenWt||0;seenLen=d.seenLen||0;odachin=d.odachin||0;if(d.up)up=Object.assign(up,d.up);if(d.owned)owned=Object.assign(owned,d.owned);voiceSel=d.voiceSel||'default';charges=scMax();if(d.buffs)buffs=Object.assign(buffs,d.buffs);calOwned=!!d.calOwned;calDays=d.calDays||0;calStart=d.calStart||null;seenTime=d.seenTime||0;shopSeen=Array.isArray(d.shopSeen)?d.shopSeen:[];paper=calOwned&&d.paper==='cal'?'cal':'ticket';boxN=count;boxCount.textContent=boxN.toLocaleString()+' まい'}}catch(e){}})();
 
 /* ---------- loop ---------- */
 const fallers=[],shifts=[];let last=performance.now(),ht=0;
@@ -710,6 +721,16 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
   if(count===0&&!dragging&&now-lastInput>2500){ht+=dt;const k=(ht%2.2)/1.6;if(k<=1){hand.setAttribute('opacity',.85*(1-Math.abs(k-.5)*.6));const x=X0+6+k*(WD-12);hand.setAttribute('transform',`translate(${x} ${lineY(x)})`)}else hand.setAttribute('opacity',0)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);hud();coinUI();if(paper==='cal'||up.layers||up.long||buffOn('gold')||buffOn('dossari'))refreshStrip();paperUI();
+/* ---------- シェア ---------- */
+document.getElementById('share').addEventListener('click',()=>{ac();
+  const leftKm=Math.max(0,EARTH_KM-meters/1000).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3});
+  let text='ミシン目を '+count.toLocaleString()+'まい ちぎった（'+fmtLen(meters)+' ぶん）。\n地球一周まで あと '+leftKm+' km。';
+  if(view==='wt')text='ミシン目を '+count.toLocaleString()+'まい ちぎったら、'+(count*GRAM).toLocaleString()+' g に なった。\n地球一周まで あと '+leftKm+' km。';
+  if(view==='time'&&calDays>0)text='日めくりを '+calDays.toLocaleString()+'まい ちぎって、'+calDays.toLocaleString()+'にち さかのぼった。';
+  text+='\n#ぜんぶちぎる';const url=location.origin+location.pathname;
+  if(navigator.share){navigator.share({text,url}).catch(()=>{})}
+  else{try{window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener')}catch(e){}}});
+layoutTop();setTimeout(layoutTop,400);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layoutTop);
 /* ---------- タイトル ---------- */
 (function(){const sp=document.getElementById('splash');if(!sp)return;
   if(count>0)document.getElementById('spCnt').textContent='これまでに '+count.toLocaleString()+' まい ちぎった';
@@ -720,7 +741,7 @@ requestAnimationFrame(frame);hud();coinUI();if(paper==='cal'||up.layers||up.long
     try{st.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate(40px,260px) rotate(28deg)',opacity:0}],{duration:600,easing:'cubic-bezier(.5,0,.8,.4)',fill:'forwards'})}catch(_){}
     sp.classList.add('out');lastInput=performance.now();setTimeout(()=>sp.remove(),800)});
 })();
-window.__m={get state(){return{count,meters,combo,busy,lineY:lineY(180),view,seenWt,seenLen,odachin,up,charges,voiceSel,buffs,paper,calOwned,calDays}},setView,give(n){odachin+=n;coinUI()}};
+window.__m={share(){document.getElementById('share').click()},get state(){return{count,meters,combo,busy,lineY:lineY(180),view,seenWt,seenLen,odachin,up,charges,voiceSel,buffs,paper,calOwned,calDays}},setView,give(n){odachin+=n;coinUI()}};
 })();
 </script>
 </body>
