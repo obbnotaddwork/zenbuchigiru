@@ -408,7 +408,7 @@ function earn(y){if(!y)return;odachin+=y;coinUI();pop('+'+y+'えん',300,548,'#a
 function fail(q){const t=tickets[0];combo=0;sfx.fail();buzz(30);stampG.setAttribute('opacity',0);
   t.ang+=(t.side==='L'?-1:1)*14;t.place();pop('ビリッ',clamp(q.x,80,280),LINE-30,'#7d6b57',20);
   finish(t,ticketM()*.5*layersN(),true,layersN())}
-function finish(t,add,bad,n){busy=true;n=n||1;count+=n;meters+=add;if(t.cal)calDays+=n;hud();save();badges();
+function finish(t,add,bad,n){busy=true;if(!bad&&up.auto)autoBoost=6;n=n||1;count+=n;meters+=add;if(t.cal)calDays+=n;hud();save();badges();
   const w=S('g',{},fallL);w.appendChild(t.g);
   const cx0=180,cy0=t.yTop+t.h/2;t.ang=bad?t.ang:0;t.place();let x=0,y=0,vx=(Math.random()-.5)*60+(t.side==='L'?-30:30),vy=bad?-40:-120,r=0,vr=(t.side==='L'?-1:1)*(bad?260:160)*(.6+Math.random()*.6),s=1;
   const target=572-Math.min(boxN,60)*0.5;
@@ -444,7 +444,7 @@ const UPS=[
   {k:'layers',name:'かさねロール',desc:'なんまいも いっきに ちぎれる',lv:['2まい','3まい','5まい','10まい'],price:[150,2000,30000,400000],ic:'ly'},
   {k:'long',name:'ながい券',desc:'1まいが ながくなる',lv:['15cm','20cm','30cm','1m','3m','10m'],price:[50,500,5000,50000,500000,5000000],ic:'lg'},
   {k:'punch',name:'改札バサミ',desc:'券を タップで パチン。おだちんが ふえる',lv:['×2','×3','×4'],price:[400,4000,20000],ic:'pc'},
-  {k:'auto',name:'じどう ちぎり機',desc:'ひらいている あいだ かってに ちぎる',lv:['1/びょう','5/びょう','20/びょう','100/びょう'],price:[20000,200000,2000000,20000000],ic:'au'}];
+  {k:'auto',name:'じどう ちぎり機',desc:'かってに ちぎる。てで ちぎると 2ばい はやい',lv:['1/びょう','5/びょう','20/びょう','100/びょう'],price:[20000,200000,2000000,20000000],ic:'au'}];
 const BMULT={gold:100,sc:40,dossari:80};
 function bPrice(b){const p=Math.max(b.price,BMULT[b.k]*5*LAYERS[up.layers]*(1+up.punch)),m=Math.pow(10,Math.max(0,Math.floor(Math.log10(p))-1));return Math.round(p/m)*m}
 const VOICES=[{k:'default',name:'ピアノ',price:0},{k:'xylo',name:'もっきん',price:100},{k:'bell',name:'すず',price:300},{k:'pico',name:'ピコピコ',price:1000}];
@@ -718,12 +718,13 @@ function save(){try{localStorage.setItem('mishin_v1',JSON.stringify({count,meter
 (function load(){try{const d=JSON.parse(localStorage.getItem('mishin_v1')||'null');if(d){count=d.count||0;meters=d.meters||0;mi=d.mi||0;seenWt=d.seenWt||0;seenLen=d.seenLen||0;odachin=d.odachin||0;if(d.up)up=Object.assign(up,d.up);if(d.owned)owned=Object.assign(owned,d.owned);voiceSel=d.voiceSel||'default';charges=scMax();if(d.buffs)buffs=Object.assign(buffs,d.buffs);calOwned=!!d.calOwned;calDays=d.calDays||0;calStart=d.calStart||null;seenTime=d.seenTime||0;shopSeen=Array.isArray(d.shopSeen)?d.shopSeen:[];paper=calOwned&&d.paper==='cal'?'cal':'ticket';boxN=count;boxCount.textContent=boxN.toLocaleString()+' まい'}}catch(e){}})();
 
 /* ---------- じどう ちぎり機 ---------- */
-let autoAcc=0,autoUiT=0,autoSaveT=0,autoDrop=0,offMsg=null;
+let autoBoost=0,autoAcc=0,autoUiT=0,autoSaveT=0,autoDrop=0,offMsg=null;
 const autoTx=T(svg,180,549,'',9.5,{fill:'#6e4b2b',class:'b'});
-function autoUI(){autoTx.textContent=up.auto?'じどう ちぎり機  '+AUTO[up.auto]+'まい/びょう':''}
+function autoMul(){return autoBoost>0?(combo>=40?3:2):1}
+function autoUI(){const m=autoMul();autoTx.textContent=up.auto?'じどう ちぎり機  '+(AUTO[up.auto]*m)+'まい/びょう'+(m>1?'（てつだい ×'+m+'）':''):'';autoTx.setAttribute('fill',m>1?'#e2574c':'#6e4b2b')}
 function autoGain(k){const n=LAYERS[up.layers];count+=k*n;meters+=k*ticketM()*n;odachin+=k*n*(1+up.punch);return k*n}
-function autoTick(dt){const r=AUTO[up.auto]||0;if(!r)return;autoAcc+=dt*r;const k=Math.floor(autoAcc);if(k>0){autoAcc-=k;autoGain(k);boxN=count}
-  autoUiT+=dt;if(autoUiT>.25){autoUiT=0;hud();coinUI();boxCount.textContent=boxN.toLocaleString()+' まい'}
+function autoTick(dt){if(autoBoost>0)autoBoost-=dt;const r=(AUTO[up.auto]||0)*autoMul();if(!r)return;autoAcc+=dt*r;const k=Math.floor(autoAcc);if(k>0){autoAcc-=k;autoGain(k);boxN=count}
+  autoUiT+=dt;if(autoUiT>.25){autoUiT=0;autoUI();hud();coinUI();boxCount.textContent=boxN.toLocaleString()+' まい'}
   autoSaveT+=dt;if(autoSaveT>5){autoSaveT=0;save()}
   if(view==='tear'){autoDrop+=dt;if(autoDrop>Math.max(.08,.5/r)&&specks.length<40){autoDrop=0;const el=S('rect',{width:9,height:5,rx:1,fill:'#fbf6ea',stroke:'#d6c6a6','stroke-width':.6},dustL);specks.push({el,x:100+Math.random()*160,y:500,vx:(Math.random()-.5)*30,vy:20,r:Math.random()*360,vr:(Math.random()-.5)*500,life:.45,t:0})}}}
 up.long=Math.min(up.long,LONG.length-1);
