@@ -265,7 +265,7 @@ const hFing=S('g',{},hand);
  S('rect',{x:-5.5,y:-1,width:11,height:30,rx:5.5,fill:sk,stroke:ink,'stroke-width':sw},g);
  S('rect',{x:-3,y:1,width:6,height:7,rx:3,fill:'#f2dccb'},g);
  S('rect',{x:-6,y:43,width:29,height:9,rx:3,fill:'#e2574c',stroke:ink,'stroke-width':sw},g)}
-let failStreak=0,playSec=0,fbDone=false;
+let failStreak=0,playSec=0,fbDone=false,fbClosed=false;
 
 /* ---------- 券 ---------- */
 let odachin=0,up={scissors:0,layers:0,long:0,punch:0,auto:0},owned={default:true},charges=0;
@@ -515,7 +515,7 @@ function buildShop(){
       T(g,48,20,v.name,10,{fill:sel?'#fbf6ea':'#3a2f25'});
       T(g,48,38,sel?'つかってる':own?'つかう':v.price+'えん',8.5,{fill:sel?'#d8c9b0':own?'#4a8f6a':(can?'#e2574c':'#a8957a'),class:'b'});
       g.addEventListener('click',()=>{if(moved)return;if(!own){if(!can){sfx.nope();return}odachin-=v.price;owned[v.k]=true;track('buy_voice',{item:v.k});sfx.coin();coinUI()}voiceSel=v.k;save();render();[0,2,4].forEach((k,j)=>setTimeout(()=>voice(note(k)),j*120))})})
-    {const fy=vy+84,g=S('g',{transform:`translate(14 ${fy})`,style:'cursor:pointer'},list);
+    if(!fbClosed){const fy=vy+84,g=S('g',{transform:`translate(14 ${fy})`,style:'cursor:pointer'},list);
       S('rect',{x:2,y:3,width:332,height:50,rx:10,fill:'rgba(70,45,20,.16)'},g);S('rect',{x:0,y:0,width:332,height:50,rx:10,fill:'#fffbe6',stroke:'#c9b79a','stroke-width':1.5,'stroke-dasharray':'4 4'},g);
       const ic=S('g',{transform:'translate(30 25) rotate(-12)'},g);S('rect',{x:-4,y:-13,width:8,height:22,rx:1.5,fill:'#e5b53a',stroke:'#3a2f25','stroke-width':1.6},ic);S('path',{d:'M-4 9 L0 15 L4 9 Z',fill:'#f2dccb',stroke:'#3a2f25','stroke-width':1.6,'stroke-linejoin':'round'},ic);
       T(g,56,19,'かんそうを おくる',12.5,{fill:'#3a2f25','text-anchor':'start'});T(g,56,35,'1ぷんで おわります。ひとことでも うれしい',8.5,{fill:'#7d6b57','text-anchor':'start',class:'b'});
@@ -741,8 +741,8 @@ function badges(){const grams=count*GRAM,ci=(c=>c<0?TGT.length:c)(TGT.findIndex(
   if(tabBtns.shop){const a=affordable();if(view==='shop'){if(shopSeen.join()!==a.join()){shopSeen=a}}set(tabBtns.shop,view!=='shop'&&a.some(k=>!shopSeen.includes(k)))}}
 function affordable(){return UPS.filter(u=>{const p=nextPrice(u);return p!=null&&odachin>=p}).map(u=>u.k+up[u.k])}
 /* 保存（この端末だけ） */
-function save(){try{localStorage.setItem('mishin_v1',JSON.stringify({count,meters,mi,seenWt,seenLen,odachin,up,owned,voiceSel,buffs,paper,calOwned,calDays,calStart,seenTime,shopSeen,playSec:Math.round(playSec),fbDone,ts:Date.now()}))}catch(e){}}
-(function load(){try{const d=JSON.parse(localStorage.getItem('mishin_v1')||'null');if(d){count=d.count||0;meters=d.meters||0;mi=d.mi||0;seenWt=d.seenWt||0;seenLen=d.seenLen||0;odachin=d.odachin||0;if(d.up)up=Object.assign(up,d.up);if(d.owned)owned=Object.assign(owned,d.owned);voiceSel=d.voiceSel||'default';charges=scMax();if(d.buffs)buffs=Object.assign(buffs,d.buffs);calOwned=!!d.calOwned;calDays=d.calDays||0;calStart=d.calStart||null;seenTime=d.seenTime||0;shopSeen=Array.isArray(d.shopSeen)?d.shopSeen:[];playSec=d.playSec||0;fbDone=!!d.fbDone;paper=calOwned&&d.paper==='cal'?'cal':'ticket';boxN=count;boxCount.textContent=boxN.toLocaleString()+' まい'}}catch(e){}})();
+function save(){try{localStorage.setItem('mishin_v1',JSON.stringify({count,meters,mi,seenWt,seenLen,odachin,up,owned,voiceSel,buffs,paper,calOwned,calDays,calStart,seenTime,shopSeen,playSec:Math.round(playSec),fbDone,fbClosed,ts:Date.now()}))}catch(e){}}
+(function load(){try{const d=JSON.parse(localStorage.getItem('mishin_v1')||'null');if(d){count=d.count||0;meters=d.meters||0;mi=d.mi||0;seenWt=d.seenWt||0;seenLen=d.seenLen||0;odachin=d.odachin||0;if(d.up)up=Object.assign(up,d.up);if(d.owned)owned=Object.assign(owned,d.owned);voiceSel=d.voiceSel||'default';charges=scMax();if(d.buffs)buffs=Object.assign(buffs,d.buffs);calOwned=!!d.calOwned;calDays=d.calDays||0;calStart=d.calStart||null;seenTime=d.seenTime||0;shopSeen=Array.isArray(d.shopSeen)?d.shopSeen:[];playSec=d.playSec||0;fbDone=!!d.fbDone;fbClosed=!!d.fbClosed;paper=calOwned&&d.paper==='cal'?'cal':'ticket';boxN=count;boxCount.textContent=boxN.toLocaleString()+' まい'}}catch(e){}})();
 
 /* ---------- じどう ちぎり機 ---------- */
 let autoBoost=0,autoAcc=0,autoUiT=0,autoSaveT=0,autoDrop=0,offMsg=null;
@@ -785,9 +785,11 @@ function fbURL(){const rec=count+'まい / '+fmtLen(meters)+' / '+Math.round(pla
   return 'https://docs.google.com/forms/d/e/1FAIpQLSdZPyCI-DI4A3tolvxJe2Y1wUuHhEZhlUhLZy3Y9m4aVCBOQA/viewform?usp=pp_url&entry.1673991079='+encodeURIComponent(rec)}
 function openFeedback(from){track('feedback_open',{from});fbDone=true;save();fbtag.classList.remove('on');try{window.open(fbURL(),'_blank','noopener')}catch(e){}}
 const fbtag=document.getElementById('fbtag');
+const FB_STATUS='https://script.google.com/macros/s/AKfycbxhHjhNtM6wgbj05GdIxKvNWlpLt21e5NQXaLxX3vcS-wpOehnHw8_dDqaMO_DXXbMo/exec';
+(function fbCheck(){if(fbClosed)return;try{const c=new AbortController();setTimeout(()=>c.abort(),8000);fetch(FB_STATUS,{signal:c.signal}).then(r=>r.json()).then(j=>{if(j&&j.open===false){fbClosed=true;fbtag.classList.remove('on');save()}}).catch(()=>{})}catch(e){}})();
 fbtag.addEventListener('click',e=>{if(e.target.classList.contains('x')){fbDone=true;save();fbtag.classList.remove('on');track('feedback_dismiss');return}openFeedback('tag')});
 function playTick(dt,now){if(now-lastInput<30000||(up.auto&&view==='tear'))playSec+=dt;
-  if(!fbDone&&view==='tear'&&!fbtag.classList.contains('on')&&(playSec>360||count>=300))fbtag.classList.add('on');
+  if(!fbDone&&!fbClosed&&view==='tear'&&!fbtag.classList.contains('on')&&(playSec>360||count>=300))fbtag.classList.add('on');
   if(fbtag.classList.contains('on')&&view!=='tear')fbtag.classList.remove('on')}
 /* ---------- シェア ---------- */
 document.getElementById('share').addEventListener('click',()=>{ac();track('share',{view});
